@@ -18,6 +18,9 @@ private:
     int qtdMetricasPermitidas;
     std :: string metricasPermitidas[4];
 
+    int ofcNumAcoes;
+    int ofcNumClientes;
+
 public:
     // construtor e destrutor
     Sistema(int numAcoes, int numClientes, int w);

@@ -38,12 +38,16 @@ void Sistema::processarEntrada() {
         }
     }
 
+    ofcNumAcoes = 0;
+    ofcNumClientes = 0;
+
     // leitura das linhas A
     while (std::cin >> tipo && tipo == 'A') {
         int id;
         std::cin >> id;
 
         acoes[id].inicializar(id, w);
+        ofcNumAcoes++;
     }
 
     // leitura das linhas U
@@ -52,7 +56,8 @@ void Sistema::processarEntrada() {
             int id;
             std::cin >> id;
 
-            clientes[id].inicializar(id, this->numAcoes);
+            clientes[id].inicializar(id, ofcNumAcoes);
+            ofcNumClientes++;
         }
     } while (std::cin >> tipo && tipo == 'U');
 
@@ -121,17 +126,17 @@ void Sistema::processarEntrada() {
 
 void Sistema :: executarConsulta(int id_consulta, int cliente_id, int n, const std::string* metricas, const double* pesos, int m) {
 
-    double pontuacao[numAcoes];
-    double valores[4][numAcoes];
+    double pontuacao[ofcNumAcoes];
+    double valores[4][ofcNumAcoes];
 
     // inicializar pontuação com 0
-    for (int i = 0; i < numAcoes; i++) {
+    for (int i = 0; i < ofcNumAcoes; i++) {
         pontuacao[i] = 0;
     }
 
     //calcular as métricas
     for (int i = 0; i < m; i++) {
-        for (int j = 0; j < numAcoes; j++) {
+        for (int j = 0; j < ofcNumAcoes; j++) {
             valores[i][j] = calcularMetrica(j, metricas[i]);
         }
     }
@@ -139,9 +144,9 @@ void Sistema :: executarConsulta(int id_consulta, int cliente_id, int n, const s
 
     //ordenar as ações para cada métrica
     for (int k = 0; k < m; k++) {
-        int indices[numAcoes];
+        int indices[ofcNumAcoes];
 
-        for (int i = 0; i < numAcoes; i++) {
+        for (int i = 0; i < ofcNumAcoes; i++) {
             indices[i] = i;
         }
 
@@ -150,10 +155,10 @@ void Sistema :: executarConsulta(int id_consulta, int cliente_id, int n, const s
     std::cout << "[ANTES] metrica " << k
               << " acao " << i
               << " valor " << valores[k][i] << "\n";
-} */
+}
+*/
 
-
-        ordenar(indices, valores[k], numAcoes);
+        ordenar(indices, valores[k], ofcNumAcoes);
 
         //debug
   /*     std::cout << "---- ranking metrica " << k << " ----\n";
@@ -165,17 +170,17 @@ for (int i = 0; i < numAcoes; i++) {
 } */
 
         //pontuação N-1 multiplicado pelos pesos e soma das métricas = pontuação final global para cada ação.
-        for(int i = 0; i < numAcoes; i++) {
+        for(int i = 0; i < ofcNumAcoes; i++) {
             int acao_id = indices[i];
-            pontuacao[acao_id] += (numAcoes - i) * pesos[k];
+            pontuacao[acao_id] += (ofcNumAcoes - i) * pesos[k];
         }
     }
 
     //filtrar ações de um cliente
-    int lista[numAcoes];
+    int lista[ofcNumAcoes];
     int total = 0;
 
-    for (int i = 0; i < numAcoes; i++) {
+    for (int i = 0; i < ofcNumAcoes; i++) {
         if (clientes[cliente_id].possuiAcao(i)) {
             lista[total] = i;
             total = total +1;
