@@ -1,6 +1,7 @@
 
 #include "../include/Acao.h"
 #include <cmath>  
+#include <iostream>
 
 //construtor padrão 
 Acao::Acao() {
@@ -67,6 +68,15 @@ double Acao::calcularRET() {
     if (base < 0){
         base = 0;
     }
+
+    //debug 
+
+ /* std::cout << "DEBUG RET - Acao " << id << ": ";
+    for (int i = 0; i < qtd_precos; i++) {
+        std::cout << cotacoes_recentes[i] << " ";
+    }
+    std::cout << " | base=" << base << " ultimo=" << qtd_precos - 1 << "\n"; */
+
 
     double RET = (cotacoes_recentes[qtd_precos - 1] /cotacoes_recentes[base]) - 1.0;
     return RET;

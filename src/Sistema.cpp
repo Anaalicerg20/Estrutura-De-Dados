@@ -157,6 +157,9 @@ void Sistema :: executarConsulta(int id_consulta, int cliente_id, int n, const s
 
         ordenar(indices, valores[k], ofcNumAcoes);
 
+      //  std::cout << "DEBUG Ordem Metrica: ";
+//for(int k=0; k<ofcNumAcoes; k++) std::cout << indices[k] << " ";
+//std::cout << std::endl;
 
         //pontuação N-1 multiplicado pelos pesos e soma das métricas = pontuação final global para cada ação.
         for(int i = 0; i < ofcNumAcoes; i++) {

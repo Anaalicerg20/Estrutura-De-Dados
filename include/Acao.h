@@ -18,6 +18,7 @@ public:
     void inicializar(int id, int w); 
     
     int getId();
+;
 
     void adicionarPreco(double preco);
     
