@@ -1,0 +1,18 @@
+M 2 RET CONS
+A 0
+A 1
+A 2
+U 0
+U 1
+P 0 10
+P 1 10
+P 2 10
+B 0 0
+B 0 1
+B 1 1
+B 1 2
+P 0 12
+P 1 9
+P 2 11
+Q 0 0 2 2 RET 1 CONS 1
+Q 1 1 2 2 RET 1 CONS 1
