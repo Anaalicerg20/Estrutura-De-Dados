@@ -41,7 +41,6 @@ void Sistema::processarEntrada() {
     ofcNumAcoes = 0;
     ofcNumClientes = 0;
 
-    // leitura das linhas A
     while (std::cin >> tipo && tipo == 'A') {
         int id;
         std::cin >> id;
@@ -49,7 +48,6 @@ void Sistema::processarEntrada() {
         acoes[id].inicializar(id, w);
         ofcNumAcoes++;
     }
-    //std::cout << "TOTAL ACOES: " << ofcNumAcoes << "\n"; //debug
 
     // leitura das linhas U
     do {
@@ -64,7 +62,6 @@ void Sistema::processarEntrada() {
 
     // leitura de P, B, V, Q em qualquer ordem
     do { 
-        //std::cout << "LI TIPO: " << tipo << "\n"; //debug
         if (tipo == 'P') {
             int acao_id;
             double preco;
@@ -72,8 +69,6 @@ void Sistema::processarEntrada() {
             std::cin >> acao_id >> preco;
             acoes[acao_id].adicionarPreco(preco);
 
-          //  std::cout << "DEBUG P: acao_id = " << acao_id << "\n"; //debug
-          //  std::cout << "ofcNumAcoes = " << ofcNumAcoes << "\n"; //debug
         }
 
         else if (tipo == 'B') {
@@ -157,10 +152,6 @@ void Sistema :: executarConsulta(int id_consulta, int cliente_id, int n, const s
 
         ordenar(indices, valores[k], ofcNumAcoes);
 
-      //  std::cout << "DEBUG Ordem Metrica: ";
-//for(int k=0; k<ofcNumAcoes; k++) std::cout << indices[k] << " ";
-//std::cout << std::endl;
-
         //pontuação N-1 multiplicado pelos pesos e soma das métricas = pontuação final global para cada ação.
         for(int i = 0; i < ofcNumAcoes; i++) {
             int acao_id = indices[i];
@@ -172,14 +163,6 @@ void Sistema :: executarConsulta(int id_consulta, int cliente_id, int n, const s
     int lista[ofcNumAcoes];
     int total = 0;
 
-    //debug
-   /* std::cout << "DEBUG CLIENTE " << cliente_id << ":\n";
-for (int i = 0; i < ofcNumAcoes; i++) {
-    if (clientes[cliente_id].possuiAcao(i)) {
-        std::cout << "cliente tem acao " << i << "\n";
-    }
-} */
-
     for (int i = 0; i < ofcNumAcoes; i++) {
         if (clientes[cliente_id].possuiAcao(i)) {
             lista[total] = i;
@@ -187,22 +170,8 @@ for (int i = 0; i < ofcNumAcoes; i++) {
         }
     }
 
-    //debug
-
-   /* std::cout << "ANTES DA ORDENACAO:\n";
-for (int i = 0; i < total; i++) {
-    std::cout << "lista[" << i << "] = " << lista[i]
-              << " pontuacao = " << pontuacao[lista[i]] << "\n";
-} */
-
     //ordenar ações do cliente
     ordenar(lista, pontuacao, total);
-//debug
-    /*std::cout << "DEPOIS DA ORDENACAO:\n";
-for (int i = 0; i < total; i++) {
-    std::cout << "lista[" << i << "] = " << lista[i]
-              << " pontuacao = " << pontuacao[lista[i]] << "\n";
-} */
 
     //printar melhores e piores
     int limite;

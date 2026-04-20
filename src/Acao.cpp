@@ -1,4 +1,3 @@
-
 #include "../include/Acao.h"
 #include <cmath>  
 #include <iostream>
@@ -69,14 +68,6 @@ double Acao::calcularRET() {
         base = 0;
     }
 
-    //debug 
-
- /* std::cout << "DEBUG RET - Acao " << id << ": ";
-    for (int i = 0; i < qtd_precos; i++) {
-        std::cout << cotacoes_recentes[i] << " ";
-    }
-    std::cout << " | base=" << base << " ultimo=" << qtd_precos - 1 << "\n"; */
-
 
     double RET = (cotacoes_recentes[qtd_precos - 1] /cotacoes_recentes[base]) - 1.0;
     return RET;
@@ -111,7 +102,7 @@ double Acao::calcularAVGRET(){
 
 //estabilidade
 double Acao::calcularSTAB() {
-    if (qtd_precos < 2) return 1.0; 
+    if (qtd_precos < 2) return 0.0; 
 
     double media = calcularAVGRET();
     double soma = 0.0;
@@ -130,9 +121,7 @@ double Acao::calcularSTAB() {
         count++;
     }
 
-    if (count == 0) {
-        return 1.0;
-    }
+    if (count == 0) return 0.0;
 
     double variancia = soma / count;
     double vol = sqrt(variancia);
