@@ -10,6 +10,22 @@
 
 using namespace std;
 
+
+// ordena ids em ordem crescente
+void ordenar(int* vetor, int tamanho) {
+
+    for (int i = 0; i < tamanho - 1; i++) {
+
+        for (int j = 0; j < tamanho - i - 1; j++) {
+
+            if (vetor[j] > vetor[j + 1]) {
+
+                std::swap(vetor[j], vetor[j + 1]);
+            }
+        }
+    }
+}
+
 int main() {
     const int OFFSET_TEMAS = 5000;
 
@@ -248,6 +264,8 @@ int main() {
                     noUsuario->getIndice()
                 );
 
+            int* temas = new int[grau];
+
             for (int i = 0; i < grau; i++) {
 
                 int adj =
@@ -258,18 +276,26 @@ int main() {
 
                 No* noTema =
                     grafoTemas.obterVertice(adj);
+                
+                temas[i] = noTema->getId();
+            }
+             ordenar(temas, grau);
 
+            // imprime ordenado
+            for (int i = 0; i < grau; i++) {
                 Tema* tema =
-                    dicionario.getTema(noTema->getId());
+                    dicionario.getTema(temas[i]);
 
                 std :: cout << " "
                      << tema->getNome();
             }
 
+            delete[] temas; 
             std :: cout << endl;
+
         }
 
-        // =========================
+                // =========================
         // LISTAR SEGUIDORES
         // =========================
 
@@ -287,6 +313,8 @@ int main() {
             std :: cout << "LC "
                  << usuario->getNome();
 
+            int quantidade = 0;
+
             for (int i = 0;
                  i < grafoSocial.getCapacidade();
                  i++) {
@@ -303,15 +331,49 @@ int main() {
                         noUsuario->getIndice()
                     )) {
 
-                    Usuario* seguidor =
-                        dicionario.getUsuario(
-                            candidato->getId()
-                        );
-
-                    std :: cout << " "
-                         << seguidor->getNome();
+                    quantidade++;
                 }
             }
+
+            int* seguidores = new int[quantidade];
+
+            int k = 0;
+
+            for (int i = 0;
+                 i < grafoSocial.getCapacidade();
+                 i++) {
+
+                No* candidato =
+                    grafoSocial.obterVertice(i);
+
+                if (candidato == nullptr) {
+                    continue;
+                }
+
+                if (grafoSocial.existeAresta(
+                        candidato->getIndice(),
+                        noUsuario->getIndice()
+                    )) {
+
+                    seguidores[k++] =
+                        candidato->getId();
+                }
+            }
+
+            ordenar(seguidores, quantidade);
+
+            for (int i = 0; i < quantidade; i++) {
+
+                Usuario* seguidor =
+                    dicionario.getUsuario(
+                        seguidores[i]
+                    );
+
+                std :: cout << " "
+                     << seguidor->getNome();
+            }
+
+            delete[] seguidores;
 
             std :: cout << endl;
         }
@@ -339,6 +401,8 @@ int main() {
                     noUsuario->getIndice()
                 );
 
+            int* seguidos = new int[grau];
+
             for (int i = 0; i < grau; i++) {
 
                 int adj =
@@ -350,14 +414,24 @@ int main() {
                 No* noSeguido =
                     grafoSocial.obterVertice(adj);
 
+                seguidos[i] =
+                    noSeguido->getId();
+            }
+
+            ordenar(seguidos, grau);
+
+            for (int i = 0; i < grau; i++) {
+
                 Usuario* seguido =
                     dicionario.getUsuario(
-                        noSeguido->getId()
+                        seguidos[i]
                     );
 
                 std :: cout << " "
                      << seguido->getNome();
             }
+
+            delete[] seguidos;
 
             std :: cout << endl;
         }
@@ -379,6 +453,40 @@ int main() {
 
             std :: cout << "LA "
                  << usuario->getNome();
+
+            int quantidade = 0;
+
+            for (int i = 0;
+                 i < grafoSocial.getCapacidade();
+                 i++) {
+
+                No* candidato =
+                    grafoSocial.obterVertice(i);
+
+                if (candidato == nullptr) {
+                    continue;
+                }
+
+                bool ida =
+                    grafoSocial.existeAresta(
+                        noUsuario->getIndice(),
+                        candidato->getIndice()
+                    );
+
+                bool volta =
+                    grafoSocial.existeAresta(
+                        candidato->getIndice(),
+                        noUsuario->getIndice()
+                    );
+
+                if (ida && volta) {
+                    quantidade++;
+                }
+            }
+
+            int* amigos = new int[quantidade];
+
+            int k = 0;
 
             for (int i = 0;
                  i < grafoSocial.getCapacidade();
@@ -405,15 +513,25 @@ int main() {
 
                 if (ida && volta) {
 
-                    Usuario* amigo =
-                        dicionario.getUsuario(
-                            candidato->getId()
-                        );
-
-                    std :: cout << " "
-                         << amigo->getNome();
+                    amigos[k++] =
+                        candidato->getId();
                 }
             }
+
+            ordenar(amigos, quantidade);
+
+            for (int i = 0; i < quantidade; i++) {
+
+                Usuario* amigo =
+                    dicionario.getUsuario(
+                        amigos[i]
+                    );
+
+                std :: cout << " "
+                     << amigo->getNome();
+            }
+
+            delete[] amigos;
 
             std :: cout << endl;
         }

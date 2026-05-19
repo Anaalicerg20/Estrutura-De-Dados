@@ -1,7 +1,7 @@
 #include "../include/Grafo.h"
 
 //construtor
-Grafo::Grafo(int tipoRepresentacao, int tipoGrafo): tipoRepresentacao(tipoRepresentacao), tipoGrafo(tipoGrafo), capacidade(10), quantidadeVertices(0), vertices(nullptr), matriz(nullptr), listas(nullptr), graus(nullptr) {
+Grafo::Grafo(int tipoRepresentacao, int tipoGrafo): tipoRepresentacao(tipoRepresentacao), tipoGrafo(tipoGrafo), capacidade(10), vertices(nullptr), matriz(nullptr), listas(nullptr), graus(nullptr) {
 
     //inicializa os 10 vertices 
     vertices = new No*[capacidade];
@@ -20,11 +20,6 @@ Grafo::Grafo(int tipoRepresentacao, int tipoGrafo): tipoRepresentacao(tipoRepres
 
 //destrutor
 Grafo::~Grafo() {
-
-    // libera nós
-    for (int i = 0; i < capacidade; i++) {
-        delete vertices[i];
-    }
 
     delete[] vertices;
 
@@ -177,7 +172,6 @@ void Grafo::inserirVertice(No* no) {
     }
 
     vertices[indice] = no;
-    //quantidadeVertices++;
 
 }
 

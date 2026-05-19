@@ -51,7 +51,6 @@ public:
     //Vértices
     void inserirVertice(No* no);
     No* obterVertice(int id) const;
-    int getQuantidadeVertices() const;
     int getCapacidade() const;
 
     //Arestas
