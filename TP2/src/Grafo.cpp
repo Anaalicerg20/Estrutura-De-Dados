@@ -32,7 +32,6 @@ Grafo::~Grafo() {
 
 
 // FUNÇÕES PRIVADAS, REPRESENTAÇÃO: LISTA E MATRIZ 
-
 void Grafo::inicializarMatriz() {
 
     matriz = new bool*[capacidade]; //vetor de linhas da matriz 
@@ -59,7 +58,7 @@ void Grafo::destruirMatriz() {
 void Grafo::inicializarListas() {
 
     listas = new int*[capacidade]; //vetor de ponteiros, cada posição aponta para um vetor adjacente 
-    graus = new int[capacidade]; //vetor d einteiros, quantos adjacente cada vértice tem
+    graus = new int[capacidade]; //vetor de inteiros, quantos adjacente cada vértice tem
 
     for (int i = 0; i < capacidade; i++) { //percorre todos os vértices: iniclamnete sem adjacentes 
         listas[i] = nullptr;
@@ -184,10 +183,6 @@ No* Grafo::obterVertice(int indice) const {
 
     return vertices[indice];
 }
-
-//int Grafo::getQuantidadeVertices() const {
- //   return quantidadeVertices;
-//}
 
 int Grafo::getCapacidade() const {
     return capacidade;
@@ -489,13 +484,5 @@ void Grafo::alterarRepresentacao(int novaRepresentacao) {
         tipoRepresentacao = LISTA;
     }
 }
-
-//int Grafo::getTipoRepresentacao() const {
-//    return tipoRepresentacao;
-//}
-
-//int Grafo::getTipoGrafo() const {
-  //  return tipoGrafo;
-//}
 
 

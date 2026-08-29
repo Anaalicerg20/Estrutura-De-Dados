@@ -8,18 +8,11 @@
 #include "../include/Grafo.h"
 #include "../include/Dicionario.h"
 
-using namespace std;
-
-
-// ordena ids em ordem crescente
+// Ordena ids em ordem crescente
 void ordenar(int* vetor, int tamanho) {
-
     for (int i = 0; i < tamanho - 1; i++) {
-
         for (int j = 0; j < tamanho - i - 1; j++) {
-
             if (vetor[j] > vetor[j + 1]) {
-
                 std::swap(vetor[j], vetor[j + 1]);
             }
         }
@@ -27,627 +20,277 @@ void ordenar(int* vetor, int tamanho) {
 }
 
 int main() {
+    //garante que usuario e temas não serao guardados no mesmo local na memoria 
     const int OFFSET_TEMAS = 5000;
-
-    // começa com lista
     int representacaoAtual = LISTA;
 
-    // cria os grafos
     Grafo grafoSocial(LISTA, GRAFO_SOCIAL);
     Grafo grafoTemas(LISTA, GRAFO_TEMAS);
-
-    // cria dicionário
     Dicionario dicionario;
 
-    // ids automáticos
     int proxIdUsuario = 0;
     int proxIdTema = 0;
+    std::string linha;
 
-    string linha;
-
-    while (getline(cin, linha)) {
-
+    while (std::getline(std::cin, linha)) {
         if (linha.empty()) {
             continue;
         }
 
-        stringstream ss(linha);
-
-        string comando;
+        std::stringstream ss(linha);
+        std::string comando;
         ss >> comando;
 
-        // =========================
-        // ALTERAR REPRESENTAÇÃO
-        // =========================
-
+        // Alterar representação
         if (comando == "A") {
-
             char modo;
             ss >> modo;
 
             if (modo == 'L') {
                 representacaoAtual = LISTA;
-            }
-            else {
+            } else {
                 representacaoAtual = MATRIZ;
             }
 
             grafoSocial.alterarRepresentacao(representacaoAtual);
             grafoTemas.alterarRepresentacao(representacaoAtual);
 
-            std :: cout << "A " << modo << endl;
+            std::cout << "A " << modo << std::endl;
         }
 
-        // =========================
-        // CADASTRAR TEMA
-        // =========================
-
+        // Mudar tema 
         else if (comando == "T") {
-
-            string nomeTema;
+            std::string nomeTema;
             char tipoTema;
-
             ss >> nomeTema >> tipoTema;
 
-            int idTema = proxIdTema;
-
-            Tema* tema = new Tema(idTema, nomeTema, tipoTema);
-
-            // nó do tema no grafo bipartido
-            No* noTema = new No(idTema, OFFSET_TEMAS + idTema, 'T');
+            Tema* tema = new Tema(proxIdTema, nomeTema, tipoTema);
+            No* noTema = new No(proxIdTema, OFFSET_TEMAS + proxIdTema, 'T');
 
             grafoTemas.inserirVertice(noTema);
-
             dicionario.inserirTema(tema, noTema);
 
-            std :: cout << "T " << idTema << endl;
-
+            std::cout << "T " << proxIdTema << std::endl;
             proxIdTema++;
         }
 
-        // =========================
-        // CADASTRAR USUÁRIO
-        // =========================
-
+        // Cadastra usuário 
         else if (comando == "U") {
-
-            string nome;
+            std::string nome;
             int idade;
-
             ss >> nome >> idade;
 
-            int idUsuario = proxIdUsuario;
-
-            Usuario* usuario =
-                new Usuario(idUsuario, nome, idade);
-
-            // nó no grafo social
-            No* noSocial =
-                new No(idUsuario,
-                       idUsuario, //MUDANÇA: grafoSocial.getQuantidadeVertices()
-                       'U');
-
-            // nó no grafo temas
-            No* noTemaUsuario =
-                new No(idUsuario,
-                       idUsuario,
-                       'U');
+            Usuario* usuario = new Usuario(proxIdUsuario, nome, idade);
+            No* noSocial = new No(proxIdUsuario, proxIdUsuario, 'U');
+            No* noTemaUsuario = new No(proxIdUsuario, proxIdUsuario, 'U');
 
             grafoSocial.inserirVertice(noSocial);
             grafoTemas.inserirVertice(noTemaUsuario);
+            dicionario.inserirUsuario(usuario, noSocial, noTemaUsuario);
 
-            dicionario.inserirUsuario(usuario,
-                                      noSocial,
-                                      noTemaUsuario);
-
-            // inserir arestas usuário-tema
             int idTema;
-
             while (ss >> idTema) {
-
-                No* noTema =
-                    dicionario.getNoTema(idTema);
-
-                grafoTemas.inserirAresta(
-                    noTemaUsuario->getIndice(),
-                    noTema->getIndice()
-                );
+                grafoTemas.inserirAresta(noTemaUsuario->getIndice(), dicionario.getNoTema(idTema)->getIndice());
             }
 
-            std :: cout << "U " << idUsuario << endl;
-
+            std::cout << "U " << proxIdUsuario << std::endl;
             proxIdUsuario++;
         }
 
-/*        else if (comando == "S") {
-        int u, v;
-        ss >> u >> v;
-
-        // Acessando índices via Dicionário de forma direta
-        grafoSocial.inserirAresta(dicionario.getNoSocial(u)->getIndice(), 
-                              dicionario.getNoSocial(v)->getIndice());
-
-        std:: cout << "S " << dicionario.getUsuario(u)->getNome() << " " 
-            << dicionario.getUsuario(v)->getNome() << endl;
-        }
-*/
-
-        // =========================
-        // SEGUIR
-        // =========================
-
+        //Seguir
         else if (comando == "S") {
-
             int u, v;
-
             ss >> u >> v;
 
-            No* origem =
-                dicionario.getNoSocial(u);
-
-            No* destino =
-                dicionario.getNoSocial(v);
-
-            grafoSocial.inserirAresta(
-                origem->getIndice(),
-                destino->getIndice()
-            );
-
-            Usuario* usuarioU =
-                dicionario.getUsuario(u);
-
-            Usuario* usuarioV =
-                dicionario.getUsuario(v);
-
-            std :: cout << "S "
-                 << usuarioU->getNome()
-                 << " "
-                 << usuarioV->getNome()
-                 << endl;
+            grafoSocial.inserirAresta(dicionario.getNoSocial(u)->getIndice(), dicionario.getNoSocial(v)->getIndice());
+            std::cout << "S " << dicionario.getUsuario(u)->getNome() << " " << dicionario.getUsuario(v)->getNome() << std::endl;
         }
-    
 
-        // =========================
-        // REMOVER SEGUIMENTO
-        // =========================
-
+        // Remover seguimento
         else if (comando == "R") {
-
             int u, v;
-
             ss >> u >> v;
 
-            No* origem =
-                dicionario.getNoSocial(u);
-
-            No* destino =
-                dicionario.getNoSocial(v);
-
-            grafoSocial.removerAresta(
-                origem->getIndice(),
-                destino->getIndice()
-            );
-
-            Usuario* usuarioU =
-                dicionario.getUsuario(u);
-
-            Usuario* usuarioV =
-                dicionario.getUsuario(v);
-
-            std :: cout << "R "
-                 << usuarioU->getNome()
-                 << " "
-                 << usuarioV->getNome()
-                 << endl;
+            grafoSocial.removerAresta(dicionario.getNoSocial(u)->getIndice(), dicionario.getNoSocial(v)->getIndice());
+            std::cout << "R " << dicionario.getUsuario(u)->getNome() << " " << dicionario.getUsuario(v)->getNome() << std::endl;
         }
 
-        // =========================
-        // LISTAR TEMAS
-        // =========================
-
+        // Listar temas de um usuário
         else if (comando == "LT") {
-
             int idUsuario;
             ss >> idUsuario;
 
-            Usuario* usuario =
-                dicionario.getUsuario(idUsuario);
+            std::cout << "LT " << dicionario.getUsuario(idUsuario)->getNome();
 
-            No* noUsuario =
-                dicionario.getNoUsuarioTema(idUsuario);
-
-            std :: cout << "LT "
-                 << usuario->getNome();
-
-            int grau =
-                grafoTemas.getGrau(
-                    noUsuario->getIndice()
-                );
-
+            int grau = grafoTemas.getGrau(dicionario.getNoUsuarioTema(idUsuario)->getIndice());
             int* temas = new int[grau];
 
             for (int i = 0; i < grau; i++) {
-
-                int adj =
-                    grafoTemas.getAdjacente(
-                        noUsuario->getIndice(),
-                        i
-                    );
-
-                No* noTema =
-                    grafoTemas.obterVertice(adj);
-                
-                temas[i] = noTema->getId();
+                int adj = grafoTemas.getAdjacente(dicionario.getNoUsuarioTema(idUsuario)->getIndice(), i);
+                temas[i] = grafoTemas.obterVertice(adj)->getId();
             }
-             ordenar(temas, grau);
 
-            // imprime ordenado
+            ordenar(temas, grau);
+
             for (int i = 0; i < grau; i++) {
-                Tema* tema =
-                    dicionario.getTema(temas[i]);
-
-                std :: cout << " "
-                     << tema->getNome();
+                std::cout << " " << dicionario.getTema(temas[i])->getNome();
             }
 
-            delete[] temas; 
-            std :: cout << endl;
-
+            delete[] temas;
+            std::cout << std::endl;
         }
 
-                // =========================
-        // LISTAR SEGUIDORES
-        // =========================
-
+        // Listar seguidores
         else if (comando == "LC") {
-
             int idUsuario;
             ss >> idUsuario;
 
-            Usuario* usuario =
-                dicionario.getUsuario(idUsuario);
-
-            No* noUsuario =
-                dicionario.getNoSocial(idUsuario);
-
-            std :: cout << "LC "
-                 << usuario->getNome();
+            std::cout << "LC " << dicionario.getUsuario(idUsuario)->getNome();
 
             int quantidade = 0;
+            int indiceAlvo = dicionario.getNoSocial(idUsuario)->getIndice();
 
-            for (int i = 0;
-                 i < grafoSocial.getCapacidade();
-                 i++) {
-
-                No* candidato =
-                    grafoSocial.obterVertice(i);
-
-                if (candidato == nullptr) {
-                    continue;
-                }
-
-                if (grafoSocial.existeAresta(
-                        candidato->getIndice(),
-                        noUsuario->getIndice()
-                    )) {
-
+            for (int i = 0; i < grafoSocial.getCapacidade(); i++) {
+                if (grafoSocial.obterVertice(i) != nullptr && grafoSocial.existeAresta(grafoSocial.obterVertice(i)->getIndice(), indiceAlvo)) {
                     quantidade++;
                 }
             }
 
             int* seguidores = new int[quantidade];
-
             int k = 0;
 
-            for (int i = 0;
-                 i < grafoSocial.getCapacidade();
-                 i++) {
-
-                No* candidato =
-                    grafoSocial.obterVertice(i);
-
-                if (candidato == nullptr) {
-                    continue;
-                }
-
-                if (grafoSocial.existeAresta(
-                        candidato->getIndice(),
-                        noUsuario->getIndice()
-                    )) {
-
-                    seguidores[k++] =
-                        candidato->getId();
+            for (int i = 0; i < grafoSocial.getCapacidade(); i++) {
+                if (grafoSocial.obterVertice(i) != nullptr && grafoSocial.existeAresta(grafoSocial.obterVertice(i)->getIndice(), indiceAlvo)) {
+                    seguidores[k++] = grafoSocial.obterVertice(i)->getId();
                 }
             }
 
             ordenar(seguidores, quantidade);
 
             for (int i = 0; i < quantidade; i++) {
-
-                Usuario* seguidor =
-                    dicionario.getUsuario(
-                        seguidores[i]
-                    );
-
-                std :: cout << " "
-                     << seguidor->getNome();
+                std::cout << " " << dicionario.getUsuario(seguidores[i])->getNome();
             }
 
             delete[] seguidores;
-
-            std :: cout << endl;
+            std::cout << std::endl;
         }
 
-        // =========================
-        // LISTAR SEGUIDOS
-        // =========================
-
+        // Listar seguidos
         else if (comando == "LS") {
-
             int idUsuario;
             ss >> idUsuario;
 
-            Usuario* usuario =
-                dicionario.getUsuario(idUsuario);
+            std::cout << "LS " << dicionario.getUsuario(idUsuario)->getNome();
 
-            No* noUsuario =
-                dicionario.getNoSocial(idUsuario);
-
-            std :: cout << "LS "
-                 << usuario->getNome();
-
-            int grau =
-                grafoSocial.getGrau(
-                    noUsuario->getIndice()
-                );
-
+            int grau = grafoSocial.getGrau(dicionario.getNoSocial(idUsuario)->getIndice());
             int* seguidos = new int[grau];
 
             for (int i = 0; i < grau; i++) {
-
-                int adj =
-                    grafoSocial.getAdjacente(
-                        noUsuario->getIndice(),
-                        i
-                    );
-
-                No* noSeguido =
-                    grafoSocial.obterVertice(adj);
-
-                seguidos[i] =
-                    noSeguido->getId();
+                int adj = grafoSocial.getAdjacente(dicionario.getNoSocial(idUsuario)->getIndice(), i);
+                seguidos[i] = grafoSocial.obterVertice(adj)->getId();
             }
 
             ordenar(seguidos, grau);
 
             for (int i = 0; i < grau; i++) {
-
-                Usuario* seguido =
-                    dicionario.getUsuario(
-                        seguidos[i]
-                    );
-
-                std :: cout << " "
-                     << seguido->getNome();
+                std::cout << " " << dicionario.getUsuario(seguidos[i])->getNome();
             }
 
             delete[] seguidos;
-
-            std :: cout << endl;
+            std::cout << std::endl;
         }
 
-        // =========================
-        // LISTAR AMIGOS
-        // =========================
-
+        // Listar amigos 
         else if (comando == "LA") {
-
             int idUsuario;
             ss >> idUsuario;
 
-            Usuario* usuario =
-                dicionario.getUsuario(idUsuario);
-
-            No* noUsuario =
-                dicionario.getNoSocial(idUsuario);
-
-            std :: cout << "LA "
-                 << usuario->getNome();
+            std::cout << "LA " << dicionario.getUsuario(idUsuario)->getNome();
 
             int quantidade = 0;
+            int indiceAlvo = dicionario.getNoSocial(idUsuario)->getIndice();
 
-            for (int i = 0;
-                 i < grafoSocial.getCapacidade();
-                 i++) {
-
-                No* candidato =
-                    grafoSocial.obterVertice(i);
-
-                if (candidato == nullptr) {
+            for (int i = 0; i < grafoSocial.getCapacidade(); i++) {
+                if (grafoSocial.obterVertice(i) == nullptr) {
                     continue;
                 }
 
-                bool ida =
-                    grafoSocial.existeAresta(
-                        noUsuario->getIndice(),
-                        candidato->getIndice()
-                    );
-
-                bool volta =
-                    grafoSocial.existeAresta(
-                        candidato->getIndice(),
-                        noUsuario->getIndice()
-                    );
-
-                if (ida && volta) {
+                int indiceCandidato = grafoSocial.obterVertice(i)->getIndice();
+                if (grafoSocial.existeAresta(indiceAlvo, indiceCandidato) && grafoSocial.existeAresta(indiceCandidato, indiceAlvo)) {
                     quantidade++;
                 }
             }
 
             int* amigos = new int[quantidade];
-
             int k = 0;
 
-            for (int i = 0;
-                 i < grafoSocial.getCapacidade();
-                 i++) {
-
-                No* candidato =
-                    grafoSocial.obterVertice(i);
-
-                if (candidato == nullptr) {
+            for (int i = 0; i < grafoSocial.getCapacidade(); i++) {
+                if (grafoSocial.obterVertice(i) == nullptr) {
                     continue;
                 }
 
-                bool ida =
-                    grafoSocial.existeAresta(
-                        noUsuario->getIndice(),
-                        candidato->getIndice()
-                    );
-
-                bool volta =
-                    grafoSocial.existeAresta(
-                        candidato->getIndice(),
-                        noUsuario->getIndice()
-                    );
-
-                if (ida && volta) {
-
-                    amigos[k++] =
-                        candidato->getId();
+                int indiceCandidato = grafoSocial.obterVertice(i)->getIndice();
+                if (grafoSocial.existeAresta(indiceAlvo, indiceCandidato) && grafoSocial.existeAresta(indiceCandidato, indiceAlvo)) {
+                    amigos[k++] = grafoSocial.obterVertice(i)->getId();
                 }
             }
 
             ordenar(amigos, quantidade);
 
             for (int i = 0; i < quantidade; i++) {
-
-                Usuario* amigo =
-                    dicionario.getUsuario(
-                        amigos[i]
-                    );
-
-                std :: cout << " "
-                     << amigo->getNome();
+                std::cout << " " << dicionario.getUsuario(amigos[i])->getNome();
             }
 
             delete[] amigos;
-
-            std :: cout << endl;
+            std::cout << std::endl;
         }
 
-        // =========================
-        // CONSULTA RELAÇÃO
-        // =========================
-
+        // Consulta relação
         else if (comando == "Q") {
-
             int u, v;
-
             ss >> u >> v;
 
-            No* noU =
-                dicionario.getNoSocial(u);
+            int indiceU = dicionario.getNoSocial(u)->getIndice();
+            int indiceV = dicionario.getNoSocial(v)->getIndice();
 
-            No* noV =
-                dicionario.getNoSocial(v);
-
-            bool uv =
-                grafoSocial.existeAresta(
-                    noU->getIndice(),
-                    noV->getIndice()
-                );
-
-            bool vu =
-                grafoSocial.existeAresta(
-                    noV->getIndice(),
-                    noU->getIndice()
-                );
+            bool uv = grafoSocial.existeAresta(indiceU, indiceV);
+            bool vu = grafoSocial.existeAresta(indiceV, indiceU);
 
             int valor = 0;
-
             if (uv && vu) {
                 valor = 3;
-            }
-            else if (uv) {
+            } else if (uv) {
                 valor = 1;
-            }
-            else if (vu) {
+            } else if (vu) {
                 valor = 2;
             }
 
-            std :: cout << "Q "
-                 << dicionario.getUsuario(u)->getNome()
-                 << " "
-                 << dicionario.getUsuario(v)->getNome()
-                 << " "
-                 << valor
-                 << endl;
+            std::cout << "Q " << dicionario.getUsuario(u)->getNome() << " " << dicionario.getUsuario(v)->getNome() << " " << valor << std::endl;
         }
 
-        // =========================
-        // CONSULTA INTERESSE
-        // =========================
-
+        // Consulta interesse
         else if (comando == "G") {
-
             int idUsuario, idTema;
-
             ss >> idUsuario >> idTema;
 
-            Usuario* usuario =
-                dicionario.getUsuario(idUsuario);
+            bool existe = grafoTemas.existeAresta(dicionario.getNoUsuarioTema(idUsuario)->getIndice(), dicionario.getNoTema(idTema)->getIndice());
 
-            Tema* tema =
-                dicionario.getTema(idTema);
+            int resultadoInteresse = 0;
+            if (existe) {
+                resultadoInteresse = 1;
+            } else {
+                resultadoInteresse = 0;
+            }
 
-            No* noUsuario =
-                dicionario.getNoUsuarioTema(idUsuario);
-
-            No* noTema =
-                dicionario.getNoTema(idTema);
-
-            bool existe =
-                grafoTemas.existeAresta(
-                    noUsuario->getIndice(),
-                    noTema->getIndice()
-                );
-
-            std :: cout << "G "
-                 << usuario->getNome()
-                 << " "
-                 << tema->getNome()
-                 << " "
-                 << (existe ? 1 : 0)
-                 << endl;
+            std::cout << "G " << dicionario.getUsuario(idUsuario)->getNome() << " " << dicionario.getTema(idTema)->getNome() << " " << resultadoInteresse << std::endl;
         }
 
-        // =========================
-        // CONSULTA POPULARIDADE
-        // =========================
-
+        // Consulta popularidade de tema
         else if (comando == "F") {
-
             int idTema;
-
             ss >> idTema;
 
-            Tema* tema =
-                dicionario.getTema(idTema);
-
-            No* noTema =
-                dicionario.getNoTema(idTema);
-
-            int popularidade =
-                grafoTemas.getGrau(
-                    noTema->getIndice()
-                );
-
-            std :: cout << "F "
-                 << tema->getNome()
-                 << " "
-                 << popularidade
-                 << endl;
+            std::cout << "F " << dicionario.getTema(idTema)->getNome() << " " << grafoTemas.getGrau(dicionario.getNoTema(idTema)->getIndice()) << std::endl;
         }
     }
 

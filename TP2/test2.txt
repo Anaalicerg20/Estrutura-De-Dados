@@ -1,8 +1,0 @@
-T futebol E
-T musica E
-T anime E
-T filmes E
-
-U Ana 20 2 0 3 1
-
-LT 0

@@ -19,7 +19,6 @@ private:
 
     //num_vertices
     int capacidade; //máx q pode ter atualmente
-    int quantidadeVertices; // quantos realmente tem
 
     // vertices[id] -> nó correspondente
     No** vertices;
@@ -32,7 +31,6 @@ private:
     int* graus;
 
     //Funções
-
     void inicializarMatriz();
     void destruirMatriz();
 
@@ -64,8 +62,6 @@ public:
 
     //Representação: lista x matriz / tema x social 
     void alterarRepresentacao(int novaRepresentacao);
-   // int getTipoRepresentacao() const;
-   // int getTipoGrafo() const;
 };
 
 #endif

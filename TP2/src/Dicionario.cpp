@@ -33,13 +33,8 @@ Dicionario::~Dicionario() {
     // usuários
     for (int i = 0; i < capacidadeUsuarios; i++) {
         delete usuarios[i];
-
-        if (nosSocial[i] != nullptr) {
-            delete nosSocial[i];
-        }
-        if (nosUsuariosTemas[i] != nullptr) {
-            delete nosUsuariosTemas[i];
-        }
+        delete nosSocial[i];
+        delete nosUsuariosTemas[i];
     }
 
 
